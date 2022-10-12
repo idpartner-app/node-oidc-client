@@ -1,0 +1,38 @@
+{
+  "name": "@idpartner-app/node-oidc-client",
+  "version": "0.1.0",
+  "description": "A node module for authentication and use with the IDPartner API",
+  "main": "./lib/idpartner",
+  "scripts": {
+    "test": "jest **/test/",
+    "lint": "node_modules/.bin/eslint lib test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/idpartner/node-oidc-client.git"
+  },
+  "keywords": [
+    "idpartner",
+    "oauth2.0",
+    "oauth",
+    "api",
+    "identity",
+    "node",
+    "npm"
+  ],
+  "author": "IDPartner Engineering <engineering@idpartner.com> (https://idpartner.com)",
+  "license": "MIT",
+  "bugs": "https://github.com/idpartner-app/node-oidc-client/issues",
+  "homepage": "https://github.com/idpartner-app/node-oidc-client",
+  "dependencies": {
+    "axios": "^1.0.0",
+    "joi": "^17.6.2",
+    "node-jose": "^2.1.1",
+    "openid-client": "^5.1.10",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.24.0",
+    "jest": "^29.1.2"
+  }
+}
