@@ -32,7 +32,7 @@ const idPartner = new IDPartner({
 });
 ```
 
-#### To generate a JWKS you can use (mkjwk.org)[mkjwk.org] service to generate a key pair for signing and encryption or use [node-jose](https://github.com/cisco/node-jose) library
+#### To generate a JWKS you can use [mkjwk.org](mkjwk.org) service to generate a key pair for signing and encryption or use [node-jose](https://github.com/cisco/node-jose) library
 
 For example:
 
