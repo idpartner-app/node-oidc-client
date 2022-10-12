@@ -7,21 +7,21 @@ A node module for authentication and use with the IDPartner Trust API
 To install the module using NPM:
 
 ```
-npm install node-oidc-client
+npm install @idpartner/node-oidc-client
 ```
 
 Or Yarn:
 
 ```
-yarn add node-oidc-client
+yarn add @idpartner/node-oidc-client
 ```
 
 ## Setup
 
-Include the 'node-oidc-client' module within your script and instantiate it with a config:
+Include the '@idpartner/node-oidc-client' module within your script and instantiate it with a config:
 
 ```javascript
-const IDPartner = require('node-oidc-client');
+const IDPartner = require('@idpartner/node-oidc-client');
 
 const rawJWKS = fs.readFileSync('jwks.json');
 const jwks = JSON.parse(rawJWKS);
@@ -63,7 +63,7 @@ Set up your IDPartner as above and pass the following configuration options in:
 ```javascript
 const express = require('express'),
   router = express.Router(),
-  IDPartner = require('node-oidc-client');
+  IDPartner = require('@idpartner/node-oidc-client');
 
 const rawJWKS = fs.readFileSync('jwks.json');
 const jwks = JSON.parse(rawJWKS);
@@ -119,11 +119,11 @@ The `getAuthorizationUrl` creates an authorization url with a signed JWT (using 
 
 Example response
 ```http
-https://auth-api.idpartner.com/auth?request=ey...
+   https://auth-api.idpartner.com/oidc-proxy/auth?request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QiLCJraWQiOiIzZUxfTFNFZ0VIQ05hNDVtd1U3elo4M1NFSHZYMk1lc2RLV2NQMTRqUThzIn0.eyJyZWRpcmVjdF91cmkiOiJodHRwOi8vbG9jYWxob3N0OjMwMDEvYnV0dG9uL29hdXRoL2NhbGxiYWNrIiwiY29kZV9jaGFsbGVuZ2VfbWV0aG9kIjoiUzI1NiIsImNvZGVfY2hhbGxlbmdlIjoiRWRkMDBfUnB3RjZnbVh2TS1KY1V0ZUwzeVRCeFRHV0l3ejFKX1J2WUZROCIsInN0YXRlIjoiSWhnc1BqT3FOVGtHMmM3SWhPZGdNdGhFNEFtOFllUS1jcnRkUkpqRFBkOCIsIm5vbmNlIjoiS1ZKa1pFWFYxWTdaN25XNkN6QmY1eEVHMzA4MFY2V3dVZFNqc1NUbVJUdyIsInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJyZXNwb25zZV9tb2RlIjoiand0IiwicmVzcG9uc2VfdHlwZSI6ImNvZGUiLCJjbGllbnRfaWQiOiJtWHpKMFRKRWJXUWIyQThzMXo2Z3EiLCJuYmYiOjE2NjU1MzQzMTgsIngtZmFwaS1pbnRlcmFjdGlvbi1pZCI6ImVjNTY1M2ZkLWNmZTQtNDdkZC1hNGIxLTEwNDhlN2M3NGVhNyIsImlzcyI6Im1YekowVEpFYldRYjJBOHMxejZncSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMSIsImp0aSI6ImJyRlpDVndka2FLOHVERDVtTmJNMEh3a3Y1WEUwUmpxN1BqdklVV2JranMiLCJpYXQiOjE2NjU1MzQzMTgsImV4cCI6MTY2NTUzNDYxOH0.YUeUNDqneO1tss09chSABZ2zrQjQK0DjFJQ3osw8VwnAISYRaViZUGwJXbLGp-dpYntppmBU55JH4rs5Zbt7I2UAnaQPy_HEpfsQ-cZ-kJH9XVErtCqfck35hO5EdgWkprXFDPluN6JSyEFv2dud2vEXqJbf8iwhDInmAdEwtb_pcwrEWG_F-vFzRUjWWPip4MikShX2NortqgDsZhf50nXBFoKHz5FGHv_VULNSeOV-T1FJ7LNP2oXLfe6YO8xg-7waBR_9dF8pspAd0veykLo-4Z-cWVm8rAcirc2uLGJtgQ_tMRQV9fQWT88mehC1hFIV7VFUfgttyY68zfkGuQ&visitor_id=123NBwiSKIDqyDKdgabc
 
 ```
 
-The `verifyIdentityProviderDetails` method returns the identity provider the user selected from the selector. The object contains information about the provider and Know Your Business credentials that you can perform additional verification before request the consented claims.
+The `unpackProxyResponse` method returns the identity provider the user selected from the selector and the JWT code response from the issuer. The `identity_provider` object contains information about the provider and Know Your Business credentials that you can perform additional verification before request the consented claims. The `idp_response_code` is the signed and encrypted JWT containing the code used to exchange for identity claims
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
@@ -139,7 +139,6 @@ Example response:
 }
 ```
 
-```
 The `claims` method returns the consented identity details
 
 | Parameter | Type | Description |
