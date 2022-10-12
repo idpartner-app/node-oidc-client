@@ -166,7 +166,7 @@ Returns the consented identity details
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `idp_response_code` | `object` | **Required**. The JWT response code returned from `unpackProxyResponse`
+| `idp_response_code` | `string` | **Required**. The JWT response code returned from `unpackProxyResponse`
 | `proofs` | `object` | **Required**. The proofs that were generated during the `getAuthorizationUrl` phase
 
 An example data object:
