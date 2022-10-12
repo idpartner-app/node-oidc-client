@@ -1,5 +1,5 @@
 {
-  "name": "@idpartner-app/node-oidc-client",
+  "name": "@idpartner/node-oidc-client",
   "version": "0.1.0",
   "description": "A node module for authentication and use with the IDPartner API",
   "main": "./lib/idpartner",
