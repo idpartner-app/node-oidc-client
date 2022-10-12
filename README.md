@@ -18,7 +18,7 @@ yarn add @idpartner/node-oidc-client
 
 ## Setup
 
-Include the '@idpartner/node-oidc-client' module within your script and instantiate it with a config:
+Include the `@idpartner/node-oidc-client` module within your script and instantiate it with a config:
 
 ```javascript
 const IDPartner = require('@idpartner/node-oidc-client');
@@ -32,7 +32,7 @@ const idPartner = new IDPartner({
 });
 ```
 
-### To generate a JWKS you can use (mkjwk.org)[mkjwk.org] service to generate a key pair for signing and encryption or use [node-jose](https://github.com/cisco/node-jose) library
+#### To generate a JWKS you can use (mkjwk.org)[mkjwk.org] service to generate a key pair for signing and encryption or use [node-jose](https://github.com/cisco/node-jose) library
 
 For example:
 
