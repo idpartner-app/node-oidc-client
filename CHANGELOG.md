@@ -1,3 +1,6 @@
+0.1.4
+- Removing unused controller.js file
+
 0.1.3
 - Bumping dependencies
 
