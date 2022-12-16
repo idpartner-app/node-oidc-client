@@ -1,6 +1,6 @@
 {
   "name": "@idpartner/node-oidc-client",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "A node module for authentication and use with the IDPartner API",
   "main": "./lib/idpartner",
   "scripts": {
@@ -25,8 +25,6 @@
   "bugs": "https://github.com/idpartner-app/node-oidc-client/issues",
   "homepage": "https://github.com/idpartner-app/node-oidc-client",
   "dependencies": {
-    "axios": "^1.0.0",
-    "joi": "^17.6.4",
     "node-jose": "^2.1.1",
     "openid-client": "^5.1.10",
     "uuid": "^9.0.0"
