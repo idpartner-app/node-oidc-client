@@ -1,3 +1,8 @@
+1.0.0
+- Remove idpartner signature verification
+- Redirect to account selection if no issuer selected
+- Implement PAR in authorization flow
+
 0.1.4
 - Removing unused controller.js file
 
