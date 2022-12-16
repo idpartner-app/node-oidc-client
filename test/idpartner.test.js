@@ -4,6 +4,7 @@ const client = require('openid-client');
 
 jest.mock('openid-client');
 
+const ACCOUNT_SELECTOR = 'https://account-selector.com'
 const ISSUER = 'https://oidc-provider.com'
 const ISSUER_AUTH_ENDPOINT = 'https://oidc-provider.com/auth'
 const ISSUER_PAR_RESPONSE = { request_uri: `some:uri:${uuidv4()}`, expires_in: 60 };
@@ -33,7 +34,7 @@ describe('id-partner', function () {
     jwks: JWKS,
     client_id: 'mXzJ0TJEbWQb2A8s1z6gq',
     callback: 'http://myapplication.com',
-    oidc_proxy_service_url: ISSUER,
+    account_selector_service_url: ACCOUNT_SELECTOR,
   });
 
   beforeEach(() => {
