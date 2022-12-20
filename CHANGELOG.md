@@ -1,3 +1,6 @@
+1.0.1
+- Forward idpartner_token to the OP within the request object
+
 1.0.0
 - Remove idpartner signature verification
 - Implement PAR in authorization flow
