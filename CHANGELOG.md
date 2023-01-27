@@ -1,3 +1,6 @@
+1.0.2
+- Forward scope to account selection if no issuer selected
+
 1.0.1
 - Forward idpartner_token to the OP within the request object
 
