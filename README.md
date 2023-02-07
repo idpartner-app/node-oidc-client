@@ -86,13 +86,13 @@ router.get('/jwks', (req, res, next) => {
 router.get('/auth', (req, res, next) => {
   const scope = ['openid', 'email', 'profile'];
   req.session.idp_proofs = idPartner.generateProofs()
+  req.session.issuer = req.query.iss;
   const authorizationUrl = await idPartner.getAuthorizationUrl(req.query, req.session.idp_proofs, scope);
   res.redirect(authorizationUrl);
 });
 
 router.get('/auth/callback', (req, res, next) => {
-  const { idp_response_code } = await idPartner.unpackProxyResponse(req.query);
-  const claims = await idPartner.claims(idp_response_code, req.session.idp_proofs);
+  const claims = await idPartner.claims(req.query.response, req.session.issuer, req.session.idp_proofs);
   return res.send(claims);
   }
 });
@@ -138,27 +138,6 @@ https://auth-api.idpartner.com/oidc-proxy/auth?request=eyJhbGciOiJQUzI1NiIsInR5c
 
 <br>
 
-### unpackProxyResponse
-
-
-Returns the identity provider the user selected from the selector and the JWT code response from the issuer. The `identity_provider` object contains information about the provider and Know Your Business credentials that you can perform additional verification before request the consented claims. The `idp_response_code` is the signed and encrypted JWT containing the code used to exchange for identity claims
-
-| Parameter | Type | Description |
-| :--- | :--- | :--- |
-| `query` | `string` | **Required**. The query parameters of the callback url. The query parameters contain a signed JWT by IDPartner containing the issuer url as well as the identity provider details such as name.
-
-
-Example response:
-
-```javascript
-{ 
- name: "Chase bank",
- issuer_url: "http://identity.chase.com"
-}
-```
-
-<br>
-
 ### claims
 
 
@@ -166,7 +145,7 @@ Returns the consented identity details
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `idp_response_code` | `string` | **Required**. The JWT response code returned from `unpackProxyResponse`
+| `response` | `string` | **Required**. The signed and encrypted JWT response code returned from the issuer
 | `proofs` | `object` | **Required**. The proofs that were generated during the `getAuthorizationUrl` phase
 
 An example data object:
