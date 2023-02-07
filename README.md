@@ -146,6 +146,7 @@ Returns the consented identity details
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `response` | `string` | **Required**. The signed and encrypted JWT response code returned from the issuer
+| `issuer` | `string` | **Required**. The issuer url. It must be the same than the one used to get the authorization url
 | `proofs` | `object` | **Required**. The proofs that were generated during the `getAuthorizationUrl` phase
 
 An example data object:
