@@ -1,3 +1,7 @@
+1.0.3
+- Bump up openid-client lib
+- Provide timeout parameter for client's configuration
+
 1.0.2
 - Forward scope to account selection if no issuer selected
 
