@@ -1,3 +1,7 @@
+1.0.4
+- Change claims method to return the tokenSet instead
+- Bump up libraries
+
 1.0.3
 - Bump up openid-client lib
 - Provide timeout parameter for client's configuration
