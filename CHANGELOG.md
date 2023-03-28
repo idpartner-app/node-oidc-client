@@ -1,4 +1,4 @@
-1.0.4
+1.1.0
 - Change claims method to return the tokenSet instead
 - Bump up libraries
 
