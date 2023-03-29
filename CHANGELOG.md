@@ -1,3 +1,8 @@
+1.1.0
+- Change claims method to return the tokenSet instead
+- Bump up libraries
+- Add new credential method to use the credential endpoint for verifiable credential issuance
+
 1.0.3
 - Bump up openid-client lib
 - Provide timeout parameter for client's configuration
