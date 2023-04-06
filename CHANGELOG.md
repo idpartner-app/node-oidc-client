@@ -1,3 +1,6 @@
+1.2.0
+- Add refreshToken, userInfo and basicUserInfo functions to support async flows
+
 1.1.0
 - Change claims method to return the tokenSet instead
 - Bump up libraries
