@@ -110,7 +110,7 @@ router.get('/jwks', (req, res, next) => {
 });
 
 router.get('/auth', (req, res, next) => {
-  // Specify consent=prompt and scope=offline_access to get a refresh token that can be used to fetch full user info later on.
+  // Specify prompt=consent and scope=offline_access to get a refresh token that can be used to fetch full user info later on.
   const prompt = 'consent';
   const scope = ['openid', 'email', 'profile', 'offline_access'];
   req.session.idp_proofs = idPartner.generateProofs()
@@ -157,7 +157,7 @@ Creates an authorization url with a signed JWT (using the private key in the JKW
 | `query` | `string` | **Required**. The query parameters that started the authorization flow after the end user clicks the IDPartner Button
 | `proofs` | `string` | **Required**. Use helper method `generateProofs` to generate a `state`, `nonce` and `codeVerifier` used for security & validations purposes
 | `scope` | `array` | **Required**. Specify the user attributes your require for your application [IDPartner supports the standard OIDC scopes](https://openid.net/specs/openid-connect-basic-1_0.html#Scopes). For example - `["openid", "email", "address", "offline_access"]`
-| `prompt` | `string` | **Optional**. Specify it as `prompt` if you need an access token returned by the OP
+| `prompt` | `string` | **Optional**. Specify it as `consent` if you need a refresh token returned by the OP
 
 <br>
 
@@ -230,7 +230,7 @@ Receives a refresh token and returns a new access token
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `issuer` | `string` | **Required**. The issuer url. It must be the same than the one used to get the authorization url
-| `refreshToken` | `string` | **Required**. The refresh token returned as part of the token returned when the call to `token` function was made
+| `refreshToken` | `string` | **Required**. The refresh token returned as part of the response returned by the `token` function
 
 An example data object:
 
