@@ -9,7 +9,6 @@ on:
   workflow_dispatch:
 defaults:
   run:
-    working-directory: ./node-oidc-client
     shell: bash
 jobs:
   lint-and-test:
@@ -21,8 +20,17 @@ jobs:
       with:
         node-version: 18.14.2
     - name: Install
-      run: yarn install
+      run: | 
+        pwd
+        ls
+        yarn install
     - name: Run lint
-      run: yarn lint
+      run: | 
+        pwd
+        ls
+        yarn lint
     - name: Run tests
-      run: yarn test
+      run: | 
+        pwd
+        ls
+        yarn test
