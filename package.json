@@ -4,7 +4,7 @@
   "description": "A node module for authentication and use with the IDPartner API",
   "main": "./lib/idpartner",
   "scripts": {
-    "test": "jest **/test/",
+    "test": "jest test/**",
     "lint": "node_modules/.bin/eslint lib test"
   },
   "repository": {
