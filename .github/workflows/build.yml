@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 defaults:
   run:
-    working-directory: ./server/
+    working-directory: .
     shell: bash
 jobs:
   lint-and-test:
