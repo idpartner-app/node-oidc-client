@@ -4,7 +4,7 @@ const openidClient = require('openid-client');
 
 jest.mock('openid-client');
 
-const ACCOUNT_SELECTOR = 'https://account-selector.com'
+const ACCOUNT_SELECTOR = 'https://account-selector.com';
 const CLIENT_ID = 'mXzJ0TJEbWQb2A8s1z6gq';
 const CALLBACK_URI = 'http://myapplication.com';
 const VISITOR_ID = 'visitor-123';

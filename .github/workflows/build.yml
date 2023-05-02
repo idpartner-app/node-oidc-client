@@ -1,0 +1,31 @@
+name: build
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/build.yml'
+      - 'lib/**'
+      - 'test/**'
+  workflow_dispatch:
+defaults:
+  run:
+    working-directory: ./
+    shell: bash
+jobs:
+  lint-and-test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@master
+    - name: Setup Node 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.14.2
+        cache: yarn
+    - name: Install
+      run: yarn install
+    - name: Run lint
+      run: yarn lint
+    - name: Run tests
+      run: yarn test
