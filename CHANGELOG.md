@@ -1,3 +1,6 @@
+1.3.1
+- Handle payment_details_endpoint http code 204
+
 1.3.0
 - Include payments_info endpoint
 
