@@ -1,3 +1,5 @@
+1.3.0
+- Include payments_info endpoint
 
 1.2.1
 - Bump up @idpartner/http-client from 1.2.0 to 1.2.1
