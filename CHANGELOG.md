@@ -1,3 +1,6 @@
+1.3.2
+- Not use default response in payments_details endpoint
+
 1.3.1
 - Handle payment_details_endpoint http code 204
 

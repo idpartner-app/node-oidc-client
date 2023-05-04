@@ -298,6 +298,34 @@ An example data object:
 }
 ```
 
+<br>
+
+### paymentDetailsInfo
+
+Returns the payment details information
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+expectedIssuer, accessToken, options
+| `expectedIssuer` | `string` | **Required**. The issuer url. It must be the same than the one used to get the authorization url
+| `accessToken` | `object` | **Required**. The token object returned by the `token` or `refreshToken` function
+| `options` | `object` | **Optional**. The options object to inject in the requestResource method in the openid-client lib
+
+An example data object:
+
+```javascript
+[
+  {
+    bankId: "125000024",
+    identifier: "454992210071",
+    identifierType: "ACCOUNT_NUMBER",
+    type: "US_ACH",
+    transferIn: true,
+    transferOut: true,
+    accountId: "g833202fb0866d0ad83472c429"
+  }
+]
+```
 ## Testing
 
 ```
