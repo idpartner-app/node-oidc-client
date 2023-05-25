@@ -221,7 +221,7 @@ describe('id-partner', function () {
       expect(clientCallbackMockFn.mock.calls[0]).toEqual([
         CALLBACK_URI,
         { response: ISSUER_CODE_RESPONSE },
-        { jarm: true, state: proofs.state, nonce: proofs.nonce, code_verifier: proofs.codeVerifier },
+        { state: proofs.state, nonce: proofs.nonce, code_verifier: proofs.codeVerifier },
         {}
       ]);
 
