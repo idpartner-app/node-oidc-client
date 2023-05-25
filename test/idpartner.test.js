@@ -68,6 +68,7 @@ describe('id-partner', function () {
     client_id: CLIENT_ID,
     callback: CALLBACK_URI,
     account_selector_service_url: ACCOUNT_SELECTOR,
+    token_endpoint_auth_method: 'private_key_jwt',
   });
 
   beforeEach(() => {
