@@ -1,3 +1,10 @@
+1.5.0
+
+- Revert of https://github.com/idpartner-app/node-oidc-client/pull/18
+
+1.4.0
+- Add support for client-secret and preserve the jwt old usage
+
 1.3.2
 - Not use default response in payments_details endpoint
 
