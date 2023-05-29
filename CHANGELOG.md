@@ -1,7 +1,3 @@
-1.4.0
-
-- Add support for client-secret and preserve the jwt old usage
-
 1.3.2
 - Not use default response in payments_details endpoint
 
