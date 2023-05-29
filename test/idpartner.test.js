@@ -77,9 +77,6 @@ describe('id-partner', function () {
     clientFullUserInfoMockFn = jest.fn().mockReturnValue(ISSUER_FULL_USERINFO_RESPONSE);
     clientRequestObjectMockFn = jest.fn().mockReturnValue(ISSUER_REQUEST_OBJECT);
     clientPushedAuthRequestMockFn = jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE);
-    clientCallbackParamsMockFn = jest.fn().mockReturnValue({
-      response: ISSUER_CODE_RESPONSE,
-    });
     clientMockFn = jest.fn().mockReturnValue({
       issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
       requestObject: clientRequestObjectMockFn,
@@ -88,7 +85,6 @@ describe('id-partner', function () {
       refresh: clientRefreshTokenMockFn,
       userinfo: clientFullUserInfoMockFn,
       redirect_uris: [CALLBACK_URI],
-      callbackParams: clientCallbackParamsMockFn,
     });
 
     issuerDiscoverMockFn = jest.fn().mockResolvedValue({ Client: clientMockFn });
@@ -225,7 +221,7 @@ describe('id-partner', function () {
       expect(clientCallbackMockFn.mock.calls[0]).toEqual([
         CALLBACK_URI,
         { response: ISSUER_CODE_RESPONSE },
-        { state: proofs.state, nonce: proofs.nonce, code_verifier: proofs.codeVerifier },
+        { jarm: true, state: proofs.state, nonce: proofs.nonce, code_verifier: proofs.codeVerifier },
         {}
       ]);
 
