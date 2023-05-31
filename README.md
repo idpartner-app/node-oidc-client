@@ -16,123 +16,18 @@ Or Yarn:
 yarn add @idpartner/node-oidc-client
 ```
 
-## Setup
+<br>
 
-Include the `@idpartner/node-oidc-client` module within your script and instantiate it with a config:
-
-```javascript
-const IDPartner = require('@idpartner/node-oidc-client');
-
-const rawJWKS = fs.readFileSync('jwks.json');
-const jwks = JSON.parse(rawJWKS);
-const idPartner = new IDPartner({
-  jwks, // Private/public keys used to verify and decrypt any JSON Web Token (JWT) issued by the identity provider authorization server
-  client_id: 'mXzJ0TJEbWQb2A8s1z6gq', // Your application's client ID
-  callback: 'https://myapplication.com/auth/callback' // The location you want the app to return to on success
-});
-```
-
-**To generate a JWKS you can use [mkjwk.org](mkjwk.org) service to generate a key pair for signing and encryption or use [node-jose](https://github.com/cisco/node-jose) library**
-
-
-For example:
-
-```javascript
-const jose = require('node-jose');
-
-const keyStore = jose.JWK.createKeyStore();
-keyStore.generate('RSA', 2048, { alg: 'RSA-OAEP', enc: 'A256CBC-HS512', use: 'enc' }));
-keyStore.generate('RSA', 2048, { alg: 'PS256', use: 'sig' }));
-const JWKS = keyStore.toJSON(true);
-```
-
-> Instantiating a IDPartner instance without a config object will result in an error
+## Examples
+We have put together a list of examples to make your integration easier on each environment.
+- Sandbox: [Example using `client_secret_basic` auth method](./docs//example_client_secret_basic.md)
+- Production: [Example using `tls_client_auth` auth method without JWKs](./docs/example_tls_client_auth_without_jwks.md). Recommended for new integrations.
+- Production: [Example using `tls_client_auth` auth method with JWKs](./docs/example_tls_client_auth_with_jwks.md). Recommended to migrate from `private_key_jwt` to `tls_client_auth`.
+- Production [Deprecated]: [Example using `private_key_jwt` auth method](./docs/example_private_key_jwt.md)
 
 <br>
 
-## Authorization with Synchronous Full User Info
-
-```javascript
-const express = require('express'),
-  router = express.Router(),
-  IDPartner = require('@idpartner/node-oidc-client');
-
-const rawJWKS = fs.readFileSync('jwks.json');
-const jwks = JSON.parse(rawJWKS);
-
-const idPartner = new IDPartner({
-  jwks,
-  client_id: 'mXzJ0TJEbWQb2A8s1z6gq',
-  callback: 'https://myapplication.com/auth/callback',
-});
-
-router.get('/jwks', (req, res, next) => {
-  const jwks = await idPartner.getPublicJWKs();
-  res.send(jwks);
-});
-
-router.get('/auth', (req, res, next) => {
-  const scope = ['openid', 'email', 'profile'];
-  req.session.idp_proofs = idPartner.generateProofs()
-  req.session.issuer = req.query.iss;
-  const authorizationUrl = await idPartner.getAuthorizationUrl(req.query, req.session.idp_proofs, scope);
-  res.redirect(authorizationUrl);
-});
-
-router.get('/auth/callback', (req, res, next) => {
-  const claims = await idPartner.claims(req.query.response, req.session.issuer, req.session.idp_proofs);
-  return res.send(claims);
-  }
-});
-```
-
-<br>
-
-## Authorization with Synchronous Basic User Info and Asynchronous Full User Info
-
-```javascript
-const express = require('express'),
-  router = express.Router(),
-  IDPartner = require('@idpartner/node-oidc-client');
-
-const rawJWKS = fs.readFileSync('jwks.json');
-const jwks = JSON.parse(rawJWKS);
-
-const idPartner = new IDPartner({
-  jwks,
-  client_id: 'mXzJ0TJEbWQb2A8s1z6gq',
-  callback: 'https://myapplication.com/auth/callback',
-});
-
-router.get('/jwks', (req, res, next) => {
-  const jwks = await idPartner.getPublicJWKs();
-  res.send(jwks);
-});
-
-router.get('/auth', (req, res, next) => {
-  // Specify prompt=consent and scope=offline_access to get a refresh token that can be used to fetch full user info later on.
-  const prompt = 'consent';
-  const scope = ['openid', 'email', 'profile', 'offline_access'];
-  req.session.idp_proofs = idPartner.generateProofs()
-  req.session.issuer = req.query.iss;
-  const authorizationUrl = await idPartner.getAuthorizationUrl(req.query, req.session.idp_proofs, scope, prompt);
-  res.redirect(authorizationUrl);
-});
-
-router.get('/auth/callback', (req, res, next) => {
-  const token = await idPartner.token(req.query.response, req.session.issuer, req.session.idp_proofs);
-  const claims = await idPartner.basicUserInfo(req.session.issuer, token)
-  // Refresh token should be encrypted and stored in a secure place. Storing it in session just for demonstration purposes.
-  req.session.refresh_token = token.refresh_token;
-  return res.send(claims);
-});
-
-router.get('/auth/userinfo', (req, res, next) => {
-  const token = await idPartner.refreshToken(req.session.issuer, req.session.refresh_token);
-  const claims = await idPartner.userInfo(req.session.issuer, token)
-  return res.send(claims);
-});
-```
+## Client API
 
 ### generateProofs
 
