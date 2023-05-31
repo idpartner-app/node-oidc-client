@@ -1,3 +1,6 @@
+3.0.0
+- Add support for tls_client_auth and keep support for both client_secret_basic (default) and private_key_jwt (legacy)
+
 2.0.0
 - Add support for client-secret and preserve the jwt old usage (bumping up the major version)
 
