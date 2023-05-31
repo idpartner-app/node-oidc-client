@@ -1,4 +1,4 @@
-# Example using tls_client_auth auth method with JWKs
+# Example using tls_client_auth auth method without JWKs
 
 The usage of `tls_client_auth` is required for production apps. 
 
