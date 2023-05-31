@@ -1,6 +1,6 @@
 {
   "name": "@idpartner/node-oidc-client",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A node module for authentication and use with the IDPartner API",
   "main": "./lib/idpartner",
   "scripts": {
