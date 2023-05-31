@@ -1,6 +1,10 @@
-## Example using client_secret_basic auth method
+# Example using client_secret_basic auth method
 
 The usage of `client_secret_basic` is recomended for sandbox apps. If you are implementing a production app please use `tls_cient_auth` instead.
+
+<br>
+
+## Client initialization
 
 ```javascript
 const IDPartner = require('@idpartner/node-oidc-client');

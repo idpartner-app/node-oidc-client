@@ -1,8 +1,12 @@
-## Example using tls_client_auth auth method with JWKs
+# Example using tls_client_auth auth method with JWKs
 
 The usage of `tls_client_auth` is required for production apps. 
 
 The use of JWKs is optional for out `tls_client_auth` integration. While it enhances the security of the integration it also increases the level of difficuly to integrate a production app. If you do not need JWKs configured see [Example using tls_client_auth without JWKs](./example_tls_client_auth_without_jwks.md)
+
+<br>
+
+## Client initialization
 
 ```javascript
 const IDPartner = require('@idpartner/node-oidc-client');

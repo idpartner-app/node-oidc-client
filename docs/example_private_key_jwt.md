@@ -1,6 +1,10 @@
-## Example using private_key_jwt auth method
+# Example using private_key_jwt auth method
 
 The usage of `private_key_jwt` is deprecated and we will stop supporting it soon. If you are already using it please migrate to `tls_client_auth`. If you are implemeting a brand new integration please use `tls_client_auth`.
+
+<br>
+
+## Client initialization
 
 ```javascript
 const IDPartner = require('@idpartner/node-oidc-client');
