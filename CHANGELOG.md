@@ -1,3 +1,6 @@
+3.0.1
+- Add tls_client_auth for payment details endpoint
+
 3.0.0
 - Add support for tls_client_auth and keep support for both client_secret_basic (default) and private_key_jwt (legacy)
 
