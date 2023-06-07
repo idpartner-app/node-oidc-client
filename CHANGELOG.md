@@ -1,3 +1,6 @@
+3.0.3
+- Fix credential method by calling the absolute credential URL
+
 3.0.2
 - remove tls_client_certificate_bound_access_token from the default config. Force it to true for tls_client_auth auth methods
 
