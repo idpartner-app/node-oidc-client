@@ -1,11 +1,13 @@
 {
   "name": "@idpartner/node-oidc-client",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "A node module for authentication and use with the IDPartner API",
   "main": "./lib/idpartner",
   "scripts": {
     "test": "jest test/**",
-    "lint": "node_modules/.bin/eslint lib test"
+    "lint": "eslint lib test --color",
+    "format": "prettier --write 'lib/**/*.js' --write 'test/**/*.js'",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -25,14 +27,23 @@
   "bugs": "https://github.com/idpartner-app/node-oidc-client/issues",
   "homepage": "https://github.com/idpartner-app/node-oidc-client",
   "dependencies": {
-    "@idpartner/http-client": "^2.0.1",
+    "@idpartner/http-client": "^2.0.5",
     "@idpartner/logger": "^1.1.0",
     "node-jose": "^2.2.0",
     "openid-client": "^5.4.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.36.0",
-    "jest": "^29.5.0"
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-standard": "^5.0.0",
+    "husky": "^8.0.3",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8"
   }
 }
