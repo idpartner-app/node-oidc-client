@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest test/**",
     "lint": "eslint lib test --color",
-    "format": "prettier --write 'lib/**/*.js' --write 'test/**/*.js'"
+    "format": "prettier --write 'lib/**/*.js' --write 'test/**/*.js'",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
