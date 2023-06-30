@@ -1,3 +1,6 @@
+3.0.4
+- Bump up openid-client lib
+
 3.0.3
 - Fix credential method by calling the absolute credential URL
 

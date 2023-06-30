@@ -1,6 +1,6 @@
 {
   "name": "@idpartner/node-oidc-client",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "A node module for authentication and use with the IDPartner API",
   "main": "./lib/idpartner",
   "scripts": {
@@ -30,7 +30,7 @@
     "@idpartner/http-client": "^2.0.5",
     "@idpartner/logger": "^1.1.0",
     "node-jose": "^2.2.0",
-    "openid-client": "^5.4.0",
+    "openid-client": "^5.4.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
