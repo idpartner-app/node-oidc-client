@@ -263,7 +263,7 @@ describe('id-partner', function () {
     test('calls the correct underlying library functions and returns a valid url when claims parameter is undefined', async () => {
       const consent = 'prompt';
       const proofs = ipd.generateProofs();
-      const claims = undefined
+      const claims = undefined;
       const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
 
       // Validates that client is correctly initialized
