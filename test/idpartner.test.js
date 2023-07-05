@@ -286,7 +286,7 @@ describe('id-partner', function () {
       const url = await ipd.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
 
       // Validates the response is the url we expect
-      expect(url).toBe(`${ACCOUNT_SELECTOR}/auth/select-accounts?client_id=${CLIENT_ID}&visitor_id=${VISITOR_ID}&scope=openid payment_details email`);
+      expect(url).toBe(`${ACCOUNT_SELECTOR}/auth/select-accounts?client_id=${CLIENT_ID}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`);
     });
   });
 
