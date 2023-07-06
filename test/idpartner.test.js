@@ -60,6 +60,16 @@ const ISSUER_TOKEN_RESPONSE = {
   token_type: 'Bearer',
   claims: jest.fn(),
 };
+const CLAIMS = {
+  id_token: {
+    email: {
+      essential: true,
+    },
+  },
+  userinfo: {
+    payment_details: null,
+  },
+};
 
 describe('id-partner', function () {
   let issuerMock;
@@ -229,6 +239,54 @@ describe('id-partner', function () {
         request_uri: ISSUER_PAR_RESPONSE.request_uri,
       });
       expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+    });
+
+    test('calls the correct underlying library functions and returns a valid url when claims parameter is used', async () => {
+      const consent = 'prompt';
+      const proofs = ipd.generateProofs();
+      const claims = CLAIMS;
+      const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+
+      // Validates that client is correctly initialized
+      assertIssuerDiscoveryAndClientInitialization();
+
+      // Validates that request object and PAR is made
+      assertRequestObjectCreationAndPushedAuthRequest({ proofs, consent });
+
+      // Validates the response is the url we expect
+      const queryParams = new URLSearchParams({
+        request_uri: ISSUER_PAR_RESPONSE.request_uri,
+      });
+      expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+    });
+
+    test('calls the correct underlying library functions and returns a valid url when claims parameter is undefined', async () => {
+      const consent = 'prompt';
+      const proofs = ipd.generateProofs();
+      const claims = undefined;
+      const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+
+      // Validates that client is correctly initialized
+      assertIssuerDiscoveryAndClientInitialization();
+
+      // Validates that request object and PAR is made
+      assertRequestObjectCreationAndPushedAuthRequest({ proofs, consent });
+
+      // Validates the response is the url we expect
+      const queryParams = new URLSearchParams({
+        request_uri: ISSUER_PAR_RESPONSE.request_uri,
+      });
+      expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+    });
+
+    test('returns the converted claims into scopes when claims paramaeter is used', async () => {
+      const consent = 'prompt';
+      const proofs = ipd.generateProofs();
+      const claims = CLAIMS;
+      const url = await ipd.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+
+      // Validates the response is the url we expect
+      expect(url).toBe(`${ACCOUNT_SELECTOR}/auth/select-accounts?client_id=${CLIENT_ID}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`);
     });
   });
 

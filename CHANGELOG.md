@@ -1,3 +1,6 @@
+3.0.5
+- Add claims parameter support
+
 3.0.4
 - Bump up openid-client lib
 
