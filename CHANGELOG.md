@@ -1,3 +1,6 @@
+3.0.6
+- Always sends response_mode jwt, due to FAPI 1.0 AF
+
 3.0.5
 - Add claims parameter support
 
