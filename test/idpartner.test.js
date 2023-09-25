@@ -11,7 +11,7 @@ const {
   JWKS,
   CLAIMS,
   ISSUER_PAR_RESPONSE,
-  ISSUER_REFRESH_TOKEN_RESPONSE
+  ISSUER_REFRESH_TOKEN_RESPONSE,
 } = require('./fixtures');
 
 jest.mock('openid-client');
@@ -25,7 +25,7 @@ const ISSUER = 'https://oidc-provider.com';
 const ISSUER_AUTH_ENDPOINT = 'https://oidc-provider.com/auth';
 const ISSUER_PAYMENT_PROCESSING_ENDPOINT = 'https://oidc-provider.com/payment_processing';
 const ISSUER_OBJ = {
-  authorization_endpoint: ISSUER_AUTH_ENDPOINT
+  authorization_endpoint: ISSUER_AUTH_ENDPOINT,
 };
 
 const idpartnerPrivateKeyJwtConfig = {
@@ -68,7 +68,6 @@ const idpartnerClientMTLSConfigWithJWKS = {
   jwks: JWKS,
 };
 
-
 describe('idpartner', function () {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -84,7 +83,7 @@ describe('idpartner', function () {
       callback: jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE),
       refresh: jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE),
       userinfo: jest.fn().mockReturnValue(ISSUER_FULL_USERINFO_RESPONSE),
-      callbackParams: jest.fn().mockReturnValue({ response: ISSUER_CODE_RESPONSE, }),
+      callbackParams: jest.fn().mockReturnValue({ response: ISSUER_CODE_RESPONSE }),
     };
 
     const underlyingClientMock = jest.fn().mockReturnValue({
@@ -111,7 +110,7 @@ describe('idpartner', function () {
       redirect_uris: [clientConfig.callback],
       authorization_signed_response_alg: 'PS256',
       id_token_signed_response_alg: 'PS256',
-    }
+    };
 
     if (clientConfig.token_endpoint_auth_method === 'client_secret_basic') {
       expectedUnderlyingClientInitializationParams['client_secret'] = clientConfig.client_secret;
@@ -135,10 +134,7 @@ describe('idpartner', function () {
   };
 
   const assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest = ({ clientConfig, underlyingClientMock, proofs, consent, claims }) => {
-    const {
-      requestObject: requestObjectMock,
-      pushedAuthorizationRequest: pushedAuthorizationRequestMock
-    } = underlyingClientMock.mock.results[0].value;
+    const { requestObject: requestObjectMock, pushedAuthorizationRequest: pushedAuthorizationRequestMock } = underlyingClientMock.mock.results[0].value;
 
     const expectedRequestParams = {
       redirect_uri: clientConfig.callback,
@@ -227,7 +223,7 @@ describe('idpartner', function () {
           customUnderlyingClientBehavior: {
             issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
-          }
+          },
         });
         const consent = 'prompt';
         const proofs = idpartnerClient.generateProofs();
@@ -250,7 +246,7 @@ describe('idpartner', function () {
           customUnderlyingClientBehavior: {
             issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
-          }
+          },
         });
         const proofs = idpartnerClient.generateProofs();
         const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid']);
@@ -272,7 +268,7 @@ describe('idpartner', function () {
           customUnderlyingClientBehavior: {
             issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
-          }
+          },
         });
         const consent = 'prompt';
         const proofs = idpartnerClient.generateProofs();
@@ -295,7 +291,7 @@ describe('idpartner', function () {
           customUnderlyingClientBehavior: {
             issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
-          }
+          },
         });
         const consent = 'prompt';
         const claims = undefined;
@@ -320,7 +316,9 @@ describe('idpartner', function () {
         const url = await idpartnerClient.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs, ['openid'], consent, CLAIMS);
 
         // Validates the response is the url we expect
-        expect(url).toBe(`${idpartnerClientSecretConfig.account_selector_service_url}/auth/select-accounts?client_id=${idpartnerClientSecretConfig.client_id}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`);
+        expect(url).toBe(
+          `${idpartnerClientSecretConfig.account_selector_service_url}/auth/select-accounts?client_id=${idpartnerClientSecretConfig.client_id}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`,
+        );
       });
     });
 
@@ -330,8 +328,8 @@ describe('idpartner', function () {
         const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
           clientConfig: idpartnerClientSecretConfig,
           customUnderlyingClientBehavior: {
-            callback: callbackMockFn
-          }
+            callback: callbackMockFn,
+          },
         });
         const proofs = idpartnerClient.generateProofs();
         const token = await idpartnerClient.token(ISSUER_CODE_RESPONSE, ISSUER, proofs);
@@ -363,8 +361,8 @@ describe('idpartner', function () {
         const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
           clientConfig: idpartnerClientSecretConfig,
           customUnderlyingClientBehavior: {
-            refresh: refreshTokenMockFn
-          }
+            refresh: refreshTokenMockFn,
+          },
         });
 
         const refreshedToken = await idpartnerClient.refreshToken(ISSUER, ISSUER_TOKEN_RESPONSE.refresh_token);
@@ -405,7 +403,7 @@ describe('idpartner', function () {
           clientConfig: idpartnerClientSecretConfig,
           customUnderlyingClientBehavior: {
             userinfo: fullUserInfoMockFn,
-          }
+          },
         });
 
         const token = ISSUER_TOKEN_RESPONSE;
@@ -431,8 +429,8 @@ describe('idpartner', function () {
             issuer: {
               authorization_endpoint: ISSUER_AUTH_ENDPOINT,
               payment_processing_endponit: undefined,
-            }
-          }
+            },
+          },
         });
 
         expect(idpartnerClient.paymentProcessing(ISSUER, ISSUER_TOKEN_RESPONSE, { body: JSON.stringify({ amount: 100 }) })).rejects.toThrow();
@@ -449,7 +447,7 @@ describe('idpartner', function () {
               payment_processing_endpoint: ISSUER_PAYMENT_PROCESSING_ENDPOINT,
             },
             requestResource: requestResourceMockFn,
-          }
+          },
         });
 
         expect(idpartnerClient.paymentProcessing(ISSUER, ISSUER_TOKEN_RESPONSE, { body: JSON.stringify({ amount: 100 }) })).rejects.toThrow();
@@ -465,7 +463,7 @@ describe('idpartner', function () {
               payment_processing_endpoint: ISSUER_PAYMENT_PROCESSING_ENDPOINT,
             },
             requestResource: requestResourceMockFn,
-          }
+          },
         });
 
         const requestBody = JSON.stringify({ amount: 100 });
@@ -482,8 +480,8 @@ describe('idpartner', function () {
           {
             body: requestBody,
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          }
+            headers: { 'Content-Type': 'application/json' },
+          },
         ]);
 
         // Validates the response is the mocked payment processing response
