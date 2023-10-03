@@ -1,3 +1,9 @@
+3.1.1
+- Use @idpartner/jose-wrapper lib instead of node-jose
+
+3.1.0
+- Add support for paymet processing (beta)
+
 3.0.6
 - Always sends response_mode jwt, due to FAPI 1.0 AF
 
