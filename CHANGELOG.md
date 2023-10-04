@@ -1,3 +1,6 @@
+3.1.1
+- Use @idpartner/jose-wrapper lib instead of node-jose
+
 3.1.0
 - Add support for paymet processing (beta)
 
