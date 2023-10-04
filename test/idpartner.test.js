@@ -1,182 +1,181 @@
 const { v4: uuidv4 } = require('uuid');
 const IDPartner = require('../lib/idpartner');
 const openidClient = require('openid-client');
+const {
+  ISSUER_PAYMENT_PROCESSING_RESPONSE,
+  ISSUER_REQUEST_OBJECT,
+  ISSUER_CODE_RESPONSE,
+  ISSUER_BASIC_USERINFO_RESPONSE,
+  ISSUER_FULL_USERINFO_RESPONSE,
+  ISSUER_TOKEN_RESPONSE,
+  JWKS,
+  CLAIMS,
+  ISSUER_PAR_RESPONSE,
+  ISSUER_REFRESH_TOKEN_RESPONSE,
+} = require('./fixtures');
 
 jest.mock('openid-client');
 
 const ACCOUNT_SELECTOR = 'https://account-selector.com';
 const CLIENT_ID = 'mXzJ0TJEbWQb2A8s1z6gq';
+const CLIENT_SECRET = uuidv4();
 const CALLBACK_URI = 'http://myapplication.com';
 const VISITOR_ID = 'visitor-123';
 const ISSUER = 'https://oidc-provider.com';
 const ISSUER_AUTH_ENDPOINT = 'https://oidc-provider.com/auth';
-const ISSUER_PAR_RESPONSE = {
-  request_uri: `some:uri:${uuidv4()}`,
-  expires_in: 60,
-};
-const ISSUER_REQUEST_OBJECT =
-  'eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QiLCJraWQiOiIzZUxfTFNFZ0VIQ05hNDVtd1U3elo4M1NFSHZYMk1lc2RLV2NQMTRqUThzIn0.eyJyZWRpcmVjdF91cmkiOiJodHRwczovL3JwLmlkcGFydG5lci1kZXYuY29tL2J1dHRvbi9vYXV0aC9jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJjb2RlX2NoYWxsZW5nZSI6ImpTeUNkZkdiQkRuWVBqTmh5OGVxaFZ6bjBYRGtGRUpoUWVkU2poZ1NUUTQiLCJzdGF0ZSI6IjJiRm8tMGplZW1NTVRQWUs2TlE2X0hHY19HWEJxN2FWT0FhN2l3RlVrNEEiLCJub25jZSI6Ijc4ZWI4NTRhLTE4NjctNDhkZi05MThlLTY4OWFjN2Y3Zjc3YyIsInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJyZXNwb25zZV9tb2RlIjoiand0IiwicmVzcG9uc2VfdHlwZSI6ImNvZGUiLCJjbGllbnRfaWQiOiJEU0N6Y1h6QnZRWWNfM3lCeVhxMDIiLCJuYmYiOjE2NjUxODMyMTIsIngtZmFwaS1pbnRlcmFjdGlvbi1pZCI6ImY2YjI4NTYwLWM3NDQtNGQzYS05MGEyLTMzOTYxY2U1Yzg3MiIsImlzcyI6IkRTQ3pjWHpCdlFZY18zeUJ5WHEwMiIsImF1ZCI6Imh0dHBzOi8vYXV0aC1hcGkuaWRwYXJ0bmVyLWRldi5jb20vb2lkYyIsImp0aSI6IjNiT0lxaXNLTklLUFVvX1FZcFhIRm9hRnpZZUJzUlpHSE44OVBGTzJ1enMiLCJpYXQiOjE2NjUxODMyMTIsImV4cCI6MTY2NTE4MzUxMn0.J-jqQu5POpoog00Adzfib6D1rAvD5weKDqbA8pNCs3G4NwIiKG06sl35WKs9Zcr1TcdXvSKlRMqJvkqBP3SAWcBdUeB2b9SoO8PpYcHDQohIwZNrtCAQTECXhmly3_5PooAxPMij7mErmqMQVB8V6g_3Ljen8UcZQwgIQs5SVEpNmTwtkfOd7mhgxQlhENbYcc41aRbFyAz5of927bHlM_4t_ZBn6EDB05bTiw56UXl8IW1UdfcsgbQMkSCe-QfAFmL9BgsXHr5N2NRGu8w2WusejH-Hh-EUfVKEEmyTsFh_jyDRG-ZEF2pGWUFoobW2nQ3yArOv5yuRD6-uHIJa_w';
-const JWKS = {
-  keys: [
-    {
-      p: 'uupd5cROId24eQ3SqTDXQoXYZrdvQSMQ7ZGwyECf_9loThSs3c3hdvMQXnqzb7i-Zv60pMpaAi3s9DgHZZnPRUt5HgAYEfUAVF4aiLvkndhmeTRnI5D9WU_I9h6JlHo16nVwgqgwNglYnGigzDaTIeN7P3G3P9eA0tKkVhSTm0U',
-      kty: 'RSA',
-      q: 'tAzuMm8Mu6-UXnmxLKosHrq3wYyPz1vnIUlbj16I9UhU6Fed2_YMNrZZTvd1ajSccdC-BnZPZDpFaEL4oPd0rZHO70Wg_XUXKnKfZ_4MZ2aft9lem4vGAlaIVcME00E24HNS1gMfIor23AbfX9aq-jue0Sfdb-PjDbULaWPTcE0',
-      d: 'OwrMqCKXBW248kbYdqxFezYZU68_KKBbxcf19uyiTSusTvqdfXec0OHL0r9uQTihK4k2GW2hxiUQ2iPYxarpYP-q9FL_bOohyPJl9FErbt07NnRPwx8hZAuqjZqR8Ay_5hqhkRXPAYaCNkbJZv1JhqzWWX2u8rXaVb7K2GzGVlJXNodxhkC2NgWhtECEYJz6FLXymr6NRd_nuOYO0QONqirGef4z-aZeYHZUqAc2glinyUqzLF4jgg2JqOs3unu58L924I1dCx_VtEGDz5gOVup3kRu0TnjXPbxxvlFY-JjyQd1XstowM2XiPamJEaV_XzLyNMAW6B7NepiYVnV-4Q',
-      e: 'AQAB',
-      use: 'sig',
-      qi: 'kRs4FhjYyCiUpUmaDLczja8M00RdcG8mZEhSd5gQZ83MOefR7xyF8Qxbq15KF4-ov3vRHtqk8kxJSINhEwGIB8t3S8x4M0QkZChMlgkzj9h0r9Z_Pj2VK5HnVYQyj2MgOGZvlOSHMA8RFm8HvVMwjhqsBoAOPSTtg7xTi_NRiwo',
-      dp: 'J4G57wKa8RWIFC4TxKcKGIlpv-wtm7rprQ0KLIlcSBuPrFE6aHdHnHirkQymOIr305UqYVpTw_opB0WAar0jziWxp-GlNMZwF2T8fsIYBDTlE-E7m4zdv67ZbwvtUHC0TKYd7b_W0NUQ4Z5Lvl4aoyMNvc8vSFMoa2cSTQ90U3E',
-      alg: 'PS256',
-      dq: 'etOnWzhuk0sACEM0HqgoWP4_hQYCxQ6I6ihFEdUH0Wx6n9XFltyPEHPtEPW3X7BsWShxua7UEie-WZX2TrkBG7cwWAJEBSPvncF8BVFF3PQhWSYsaCg9-DJX50mW7Ra7_PovNFgE0WfDZ-44TAUBtpsdiMmNQltP9XXgRxEWmLE',
-      n: 'g3Y67KrzAZbi3RYzx8Be-KxRbGRthFGEBzL7alt5CBsUSb6rRTlELLo8Qq90Aw1CHogB1P9iXa22sPJNALXfTAHX7BUde8ckbyeZOFWUmsAXjMW6qMFUsDgRnVifbd8xX77wvgQSOVi6lYABguttJwCeI7HL7FnNIkuImE5V7DdWB4PT_iVqQ-jw32VLpVgvkd3sd9fSYfbw9f2tCi0jYdxAJ0ZpVI1dAlLzwlBcElQ870Rv_2PoEeR_2SGadLLGY87b0aYu67VcX9Oz44gKwFyl8YjFwjufncqWDzFEWbwaaSamVsCqS_dK9iKGSgH8FhOfopgKacVfKMfmbTLjwQ',
-    },
-  ],
-};
-const ISSUER_CODE_RESPONSE = 'gx83lI3qlXqzcJAOYUcU789QqIYEA0';
-const ISSUER_BASIC_USERINFO_RESPONSE = {
-  email: 'john@idpartner.com',
-  family_name: 'John',
-  given_name: 'Doe',
-};
-const ISSUER_FULL_USERINFO_RESPONSE = {
-  email: 'john@idpartner.com',
-  family_name: 'John',
-  given_name: 'Doe',
-  address: {
-    street_address: '7572 CHOWNING RD',
-    locality: 'SPRINGFIELD',
-    region: 'TN',
-    postal_code: '37172-6488',
-  },
-};
-const ISSUER_TOKEN_RESPONSE = {
-  access_token: 'Bw46G9pHPg3IRW5bAPDSRFPzD88jghkAcl4g2wSc0X-',
-  refresh_token: 'HsdPir0TEi4TiiyUXa90sQGauOqUkmyJ4SDUGU8xL4cKlaf4BbHMO0c4uebs',
-  expires_at: 1680738657,
-  id_token:
-    'eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ii1NXzl2cUppMHRTWURlWEZoM2Nsdlo3MG50Qm9zVVZUOWFxQi0tMlNRaVUifQ.eyJzdWIiOiJkMDQ5YTYxOC05OGU1LTQ5MjItYjkxOS1kNTU3MjEwOGE5NTIiLCJlbWFpbCI6IlBoaWxpcEhMb3ZldHRAbWlrb21vdGVzdC5jb20iLCJmYW1pbHlfbmFtZSI6IkxvdmV0dCIsImdpdmVuX25hbWUiOiJQaGlsaXAiLCJub25jZSI6IkRzc185UXdlLTk5bGU1NGlsaUtKUHhreTdkQm1TLVUtR3FQMEd6WDUxUVUiLCJhdF9oYXNoIjoiZ21rdGpTa0xIaUl4eWo2VHpPa2pTQSIsImF1ZCI6IjV0THJ4dEZTRTRqQXRQWXRkeUNRWSIsImV4cCI6MTY4MDczODY1NywiaWF0IjoxNjgwNzM4NTk3LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjkwMDEifQ.HxtbBftvGhGutmS1pC-PGpYJU7eONOuRjumIwlkD3A5Y6yzyjdZWKgj7JoA8qIO2NPDtoYwFVDV5E4gAADiun3SMBQ2mE0_ho9mfGbuskv9BC6VWSt_Z6eJHrWq83fpJrRxJGS16nSdCFo-0f8l71fl2BZdTlINxkTadu5Sc01e0usXkAlQIhtAwvCzcg-4RA5VePVaEhG_8OGxG8hPcyEMYvYpKlQ3XcaVTBRADmB0ody58RpKrEiR1AJyeha99v2HI-oGC62DpyK04SsTEcEzied9BDlEpsygWyQSqWa2gRW5Oov2FXAy37zcdYqGLG0nILZbSIX3lVJttD839wA',
-  scope: 'openid email profile address offline_access',
-  token_type: 'Bearer',
-  claims: jest.fn(),
-};
-const CLAIMS = {
-  id_token: {
-    email: {
-      essential: true,
-    },
-  },
-  userinfo: {
-    payment_details: null,
-  },
+const ISSUER_PAYMENT_PROCESSING_ENDPOINT = 'https://oidc-provider.com/payment_processing';
+const ISSUER_OBJ = {
+  authorization_endpoint: ISSUER_AUTH_ENDPOINT,
 };
 
-describe('id-partner', function () {
-  let issuerMock;
-  let issuerDiscoverMockFn;
-  let clientMockFn;
-  let clientCallbackMockFn;
-  let clientRefreshTokenMockFn;
-  let clientBasicUserInfoMockFn;
-  let clientFullUserInfoMockFn;
-  let clientRequestObjectMockFn;
-  let clientPushedAuthRequestMockFn;
-  let clientCallbackParamsMockFn;
+const idpartnerPrivateKeyJwtConfig = {
+  client_id: CLIENT_ID,
+  callback: CALLBACK_URI,
+  account_selector_service_url: ACCOUNT_SELECTOR,
+  token_endpoint_auth_method: 'private_key_jwt',
+  jwks: JWKS,
+};
 
-  const ipd = new IDPartner({
-    jwks: JWKS,
-    client_id: CLIENT_ID,
-    callback: CALLBACK_URI,
-    account_selector_service_url: ACCOUNT_SELECTOR,
-    token_endpoint_auth_method: 'private_key_jwt',
-  });
+const idpartnerClientSecretConfig = {
+  client_id: CLIENT_ID,
+  client_secret: CLIENT_SECRET,
+  callback: CALLBACK_URI,
+  account_selector_service_url: ACCOUNT_SELECTOR,
+  token_endpoint_auth_method: 'client_secret_basic',
+};
 
-  beforeEach(() => {
-    clientCallbackMockFn = jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE);
-    clientRefreshTokenMockFn = jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE);
-    clientBasicUserInfoMockFn = jest.fn().mockReturnValue(ISSUER_BASIC_USERINFO_RESPONSE);
-    clientFullUserInfoMockFn = jest.fn().mockReturnValue(ISSUER_FULL_USERINFO_RESPONSE);
-    clientRequestObjectMockFn = jest.fn().mockReturnValue(ISSUER_REQUEST_OBJECT);
-    clientPushedAuthRequestMockFn = jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE);
-    clientCallbackParamsMockFn = jest.fn().mockReturnValue({
-      response: ISSUER_CODE_RESPONSE,
-    });
-    clientMockFn = jest.fn().mockReturnValue({
-      issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
-      requestObject: clientRequestObjectMockFn,
-      pushedAuthorizationRequest: clientPushedAuthRequestMockFn,
-      callback: clientCallbackMockFn,
-      refresh: clientRefreshTokenMockFn,
-      userinfo: clientFullUserInfoMockFn,
-      redirect_uris: [CALLBACK_URI],
-      callbackParams: clientCallbackParamsMockFn,
-    });
+const idpartnerClientSecretConfigWithJWKS = {
+  client_id: CLIENT_ID,
+  client_secret: CLIENT_SECRET,
+  callback: CALLBACK_URI,
+  account_selector_service_url: ACCOUNT_SELECTOR,
+  token_endpoint_auth_method: 'client_secret_basic',
+  jwks: JWKS,
+};
 
-    issuerDiscoverMockFn = jest.fn().mockResolvedValue({ Client: clientMockFn });
-    issuerMock = jest.spyOn(openidClient, 'Issuer');
-    issuerMock.discover = issuerDiscoverMockFn;
+const idpartnerClientMTLSConfig = {
+  client_id: CLIENT_ID,
+  callback: CALLBACK_URI,
+  account_selector_service_url: ACCOUNT_SELECTOR,
+  token_endpoint_auth_method: 'tls_client_auth',
+};
 
-    ISSUER_TOKEN_RESPONSE.claims = clientBasicUserInfoMockFn;
-  });
+const idpartnerClientMTLSConfigWithJWKS = {
+  client_id: CLIENT_ID,
+  callback: CALLBACK_URI,
+  account_selector_service_url: ACCOUNT_SELECTOR,
+  token_endpoint_auth_method: 'tls_client_auth',
+  jwks: JWKS,
+};
 
+describe('idpartner', function () {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  const assertIssuerDiscoveryAndClientInitialization = () => {
-    // Validates that we call the correct underlying library function to fetch the issuer metadata
-    expect(issuerDiscoverMockFn.mock.calls.length).toBe(1);
-    expect(issuerDiscoverMockFn.mock.calls[0]).toEqual([ISSUER]);
+  const getIdpartnerClient = ({ clientConfig = {}, customUnderlyingClientBehavior = {} }) => {
+    // Initialize the underlying client with default and custom behavior
+    const defaultUnderlyingClientBehavior = {
+      issuer: ISSUER_OBJ,
+      redirect_uris: [CALLBACK_URI],
+      requestObject: jest.fn().mockReturnValue(ISSUER_REQUEST_OBJECT),
+      pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
+      callback: jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE),
+      refresh: jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE),
+      userinfo: jest.fn().mockReturnValue(ISSUER_FULL_USERINFO_RESPONSE),
+      callbackParams: jest.fn().mockReturnValue({ response: ISSUER_CODE_RESPONSE }),
+    };
 
-    // Validates that we call the correct underlying library function to instantiate the client
-    expect(clientMockFn.mock.calls.length).toBe(1);
-    expect(clientMockFn.mock.calls[0]).toEqual([
-      {
-        client_id: CLIENT_ID,
-        token_endpoint_auth_method: 'private_key_jwt',
-        redirect_uris: [CALLBACK_URI],
-        authorization_signed_response_alg: 'PS256',
-        authorization_encrypted_response_alg: 'RSA-OAEP',
-        authorization_encrypted_response_enc: 'A256CBC-HS512',
-        id_token_signed_response_alg: 'PS256',
-        id_token_encrypted_response_alg: 'RSA-OAEP',
-        id_token_encrypted_response_enc: 'A256CBC-HS512',
-        request_object_signing_alg: 'PS256',
-      },
-      JWKS,
-    ]);
+    const underlyingClientMock = jest.fn().mockReturnValue({
+      ...defaultUnderlyingClientBehavior,
+      ...customUnderlyingClientBehavior,
+    });
+
+    // Mock discover endpoint to always return the recently created underlying client
+    const issuerDiscoverMockFn = jest.fn().mockResolvedValue({ Client: underlyingClientMock });
+    const issuerMock = jest.spyOn(openidClient, 'Issuer');
+    issuerMock.discover = issuerDiscoverMockFn;
+
+    // Initialize the IDPartner client
+    const idpartnerClient = new IDPartner(clientConfig);
+
+    // Finally, return the client
+    return { idpartnerClient, underlyingClientMock };
   };
 
-  const assertRequestObjectCreationAndPushedAuthRequest = ({ proofs, consent }) => {
-    // Validates that we call the correct underlying library function to get a request object
-    expect(clientRequestObjectMockFn.mock.calls.length).toBe(1);
-    expect(clientRequestObjectMockFn.mock.calls[0]).toMatchObject([
-      {
-        redirect_uri: CALLBACK_URI,
-        code_challenge_method: 'S256',
-        code_challenge: proofs.codeChallenge,
-        state: proofs.state,
-        nonce: proofs.nonce,
-        scope: 'openid',
-        prompt: consent,
-        response_mode: 'jwt',
-        response_type: 'code',
-        client_id: CLIENT_ID,
-        nbf: expect.any(Number),
-        'x-fapi-interaction-id': expect.any(String),
-        identity_provider_id: undefined,
-        idpartner_token: undefined,
-      },
-    ]);
+  const assertUnderlyingClientInitialization = ({ clientConfig, underlyingClientMock }) => {
+    const expectedUnderlyingClientInitializationParams = {
+      client_id: clientConfig.client_id,
+      token_endpoint_auth_method: clientConfig.token_endpoint_auth_method,
+      redirect_uris: [clientConfig.callback],
+      authorization_signed_response_alg: 'PS256',
+      id_token_signed_response_alg: 'PS256',
+    };
 
-    // Validates that we call the correct underlying library function to perform a PAR request
-    expect(clientPushedAuthRequestMockFn.mock.calls.length).toBe(1);
-    expect(clientPushedAuthRequestMockFn.mock.calls[0]).toEqual([{ request: ISSUER_REQUEST_OBJECT }]);
+    if (clientConfig.token_endpoint_auth_method === 'client_secret_basic') {
+      expectedUnderlyingClientInitializationParams['client_secret'] = clientConfig.client_secret;
+    }
+
+    if (clientConfig.token_endpoint_auth_method === 'tls_client_auth') {
+      expectedUnderlyingClientInitializationParams['tls_client_certificate_bound_access_tokens'] = true;
+    }
+
+    if (clientConfig.jwks) {
+      expectedUnderlyingClientInitializationParams['authorization_encrypted_response_alg'] = 'RSA-OAEP';
+      expectedUnderlyingClientInitializationParams['authorization_encrypted_response_enc'] = 'A256CBC-HS512';
+      expectedUnderlyingClientInitializationParams['id_token_encrypted_response_alg'] = 'RSA-OAEP';
+      expectedUnderlyingClientInitializationParams['id_token_encrypted_response_enc'] = 'A256CBC-HS512';
+      expectedUnderlyingClientInitializationParams['request_object_signing_alg'] = 'PS256';
+    }
+
+    // Validates that the underlying client instance was instantiated with the expected params
+    expect(underlyingClientMock.mock.calls.length).toBe(1);
+    expect(underlyingClientMock.mock.calls[0]).toEqual([expectedUnderlyingClientInitializationParams, clientConfig.jwks]);
+  };
+
+  const assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest = ({ clientConfig, underlyingClientMock, proofs, consent, claims }) => {
+    const { requestObject: requestObjectMock, pushedAuthorizationRequest: pushedAuthorizationRequestMock } = underlyingClientMock.mock.results[0].value;
+
+    const expectedRequestParams = {
+      redirect_uri: clientConfig.callback,
+      code_challenge_method: 'S256',
+      code_challenge: proofs.codeChallenge,
+      state: proofs.state,
+      nonce: proofs.nonce,
+      scope: 'openid',
+      prompt: consent,
+      response_mode: 'jwt',
+      response_type: 'code',
+      client_id: clientConfig.client_id,
+      nbf: expect.any(Number),
+      'x-fapi-interaction-id': expect.any(String),
+      identity_provider_id: undefined,
+      idpartner_token: undefined,
+      ...(claims ? { claims: JSON.stringify(claims) } : undefined),
+    };
+
+    if (clientConfig.jwks) {
+      // Validates that we call the correct underlying function to build a request object
+      expect(requestObjectMock.mock.calls.length).toBe(1);
+      expect(requestObjectMock.mock.calls[0]).toMatchObject([expectedRequestParams]);
+
+      // Validates that we call the correct underlying function with the expected requested object to perform a PAR request
+      expect(pushedAuthorizationRequestMock.mock.calls.length).toBe(1);
+      expect(pushedAuthorizationRequestMock.mock.calls[0]).toEqual([{ request: ISSUER_REQUEST_OBJECT }]);
+    } else {
+      // Validates that no request object call is made if JWKS are not set
+      expect(requestObjectMock.mock.calls.length).toBe(0);
+
+      // Validates that we call the correct underlying function with the expected raw params (no request object) to perform a PAR request
+      expect(pushedAuthorizationRequestMock.mock.calls.length).toBe(1);
+      expect(pushedAuthorizationRequestMock.mock.calls[0]).toEqual([expectedRequestParams]);
+    }
   };
 
   describe('#generateProofs', () => {
     test('generateProofs returns state, nonce and codeVerifier', async () => {
-      const proofs = ipd.generateProofs();
+      const { idpartnerClient } = getIdpartnerClient({ clientConfig: idpartnerClientSecretConfig });
+      const proofs = idpartnerClient.generateProofs();
       expect(proofs).toHaveProperty('state');
       expect(proofs).toHaveProperty('nonce');
       expect(proofs).toHaveProperty('codeVerifier');
@@ -184,183 +183,310 @@ describe('id-partner', function () {
   });
 
   describe('#getPublicJWKs', () => {
-    test('getPublicJWKs does not include private key', async () => {
-      const jwks = await ipd.getPublicJWKs();
+    test('client without JWKS - return empty object', async () => {
+      const { idpartnerClient } = getIdpartnerClient({ clientConfig: idpartnerClientSecretConfig });
+      const jwks = await idpartnerClient.getPublicJWKs();
+      expect(jwks).toEqual({});
+    });
+
+    test('client with JWKS - return public but not private claims', async () => {
+      const { idpartnerClient } = getIdpartnerClient({ clientConfig: idpartnerClientSecretConfigWithJWKS });
+      const jwks = await idpartnerClient.getPublicJWKs();
+      expect(jwks).not.toEqual({});
       expect(jwks.d).toBeUndefined();
     });
   });
 
-  describe('#getAuthorizationUrl', () => {
-    test('fails if scope is missing ', async () => {
-      const proofs = ipd.generateProofs();
-      expect(ipd.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs)).rejects.toThrow();
-    });
+  for (const clientConfig of [idpartnerPrivateKeyJwtConfig, idpartnerClientSecretConfig, idpartnerClientSecretConfigWithJWKS, idpartnerClientMTLSConfig, idpartnerClientMTLSConfigWithJWKS]) {
+    const testPrefix = `${clientConfig.token_endpoint_auth_method} - ${clientConfig.jwks ? 'with JWKS' : 'no JWKS'}`;
 
-    test('fails if proofs is missing ', async () => {
-      expect(ipd.getAuthorizationUrl({ visitor_id: VISITOR_ID })).rejects.toThrow();
-    });
-
-    test('fails if query is missing ', async () => {
-      expect(ipd.getAuthorizationUrl()).rejects.toThrow();
-    });
-
-    test('calls the correct underlying library functions and returns a valid url', async () => {
-      const consent = 'prompt';
-      const proofs = ipd.generateProofs();
-      const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent);
-
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
-
-      // Validates that request object and PAR is made
-      assertRequestObjectCreationAndPushedAuthRequest({ proofs, consent });
-
-      // Validates the response is the url we expect
-      const queryParams = new URLSearchParams({
-        request_uri: ISSUER_PAR_RESPONSE.request_uri,
-      });
-      expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
-    });
-
-    test('returns a valid url if consent is not specified', async () => {
-      const proofs = ipd.generateProofs();
-      const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid']);
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
-
-      // Validates that request object and PAR is made
-      assertRequestObjectCreationAndPushedAuthRequest({
-        proofs,
-        consent: undefined,
+    describe('#getAuthorizationUrl', () => {
+      test(`${testPrefix} - fails if scope is missing`, async () => {
+        const { idpartnerClient } = getIdpartnerClient({ clientConfig });
+        const proofs = idpartnerClient.generateProofs();
+        expect(idpartnerClient.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs)).rejects.toThrow();
       });
 
-      // Validates the response is the url we expect
-      const queryParams = new URLSearchParams({
-        request_uri: ISSUER_PAR_RESPONSE.request_uri,
+      test(`${testPrefix} - fails if proofs is missing`, async () => {
+        const { idpartnerClient } = getIdpartnerClient({ clientConfig });
+        expect(idpartnerClient.getAuthorizationUrl({ visitor_id: VISITOR_ID })).rejects.toThrow();
       });
-      expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
-    });
 
-    test('calls the correct underlying library functions and returns a valid url when claims parameter is used', async () => {
-      const consent = 'prompt';
-      const proofs = ipd.generateProofs();
-      const claims = CLAIMS;
-      const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
-
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
-
-      // Validates that request object and PAR is made
-      assertRequestObjectCreationAndPushedAuthRequest({ proofs, consent });
-
-      // Validates the response is the url we expect
-      const queryParams = new URLSearchParams({
-        request_uri: ISSUER_PAR_RESPONSE.request_uri,
+      test(`${testPrefix} - fails if query is missing`, async () => {
+        const { idpartnerClient } = getIdpartnerClient({ clientConfig });
+        expect(idpartnerClient.getAuthorizationUrl()).rejects.toThrow();
       });
-      expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
-    });
 
-    test('calls the correct underlying library functions and returns a valid url when claims parameter is undefined', async () => {
-      const consent = 'prompt';
-      const proofs = ipd.generateProofs();
-      const claims = undefined;
-      const url = await ipd.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+      test(`${testPrefix} - calls the correct underlying library functions and returns a valid url`, async () => {
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig,
+          customUnderlyingClientBehavior: {
+            issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
+            pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
+          },
+        });
+        const consent = 'prompt';
+        const proofs = idpartnerClient.generateProofs();
+        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent);
 
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
+        // Validates that the underlying client was correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig, underlyingClientMock });
 
-      // Validates that request object and PAR is made
-      assertRequestObjectCreationAndPushedAuthRequest({ proofs, consent });
+        // Validates that request object and PAR is made
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig, underlyingClientMock, proofs, consent });
 
-      // Validates the response is the url we expect
-      const queryParams = new URLSearchParams({
-        request_uri: ISSUER_PAR_RESPONSE.request_uri,
+        // Validates the response is the url we expect
+        const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
+        expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
       });
-      expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+
+      test(`${testPrefix} - returns a valid url if consent is not specified`, async () => {
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
+            pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
+          },
+        });
+        const proofs = idpartnerClient.generateProofs();
+        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid']);
+
+        // Validates that the underlying client was correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
+
+        // Validates that request object and PAR is made
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, consent: undefined });
+
+        // Validates the response is the url we expect
+        const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
+        expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+      });
+
+      test(`${testPrefix} - calls the correct underlying library functions and returns a valid url when claims parameter is used`, async () => {
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
+            pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
+          },
+        });
+        const consent = 'prompt';
+        const proofs = idpartnerClient.generateProofs();
+        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, CLAIMS);
+
+        // Validates that the underlying client was correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
+
+        // Validates that request object and PAR is made
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, consent, claims: CLAIMS });
+
+        // Validates the response is the url we expect
+        const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
+        expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+      });
+
+      test(`${testPrefix} - calls the correct underlying library functions and returns a valid url when claims parameter is undefined`, async () => {
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            issuer: { authorization_endpoint: ISSUER_AUTH_ENDPOINT },
+            pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
+          },
+        });
+        const consent = 'prompt';
+        const claims = undefined;
+        const proofs = idpartnerClient.generateProofs();
+        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+
+        // Validates that the underlying client was correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
+
+        // Validates that request object and PAR is made
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, consent, claims });
+
+        // Validates the response is the url we expect
+        const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
+        expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
+      });
+
+      test(`${testPrefix} - returns the converted claims into scopes when claims parameter is used`, async () => {
+        const { idpartnerClient } = getIdpartnerClient({ clientConfig: idpartnerClientSecretConfig });
+        const consent = 'prompt';
+        const proofs = idpartnerClient.generateProofs();
+        const url = await idpartnerClient.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs, ['openid'], consent, CLAIMS);
+
+        // Validates the response is the url we expect
+        expect(url).toBe(
+          `${idpartnerClientSecretConfig.account_selector_service_url}/auth/select-accounts?client_id=${idpartnerClientSecretConfig.client_id}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`,
+        );
+      });
     });
 
-    test('returns the converted claims into scopes when claims paramaeter is used', async () => {
-      const consent = 'prompt';
-      const proofs = ipd.generateProofs();
-      const claims = CLAIMS;
-      const url = await ipd.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+    describe('#token', () => {
+      test(`${testPrefix} - calls the correct underlying library functions and returns an access token`, async () => {
+        const callbackMockFn = jest.fn().mockReturnValue(ISSUER_TOKEN_RESPONSE);
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            callback: callbackMockFn,
+          },
+        });
+        const proofs = idpartnerClient.generateProofs();
+        const token = await idpartnerClient.token(ISSUER_CODE_RESPONSE, ISSUER, proofs);
 
-      // Validates the response is the url we expect
-      expect(url).toBe(`${ACCOUNT_SELECTOR}/auth/select-accounts?client_id=${CLIENT_ID}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`);
+        // Validates that client is correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
+
+        // Validates that we call the correct underlying library function to get an access token
+        expect(callbackMockFn.mock.calls.length).toBe(1);
+        expect(callbackMockFn.mock.calls[0]).toEqual([
+          idpartnerClientSecretConfig.callback,
+          { response: ISSUER_CODE_RESPONSE },
+          {
+            state: proofs.state,
+            nonce: proofs.nonce,
+            code_verifier: proofs.codeVerifier,
+          },
+          {},
+        ]);
+
+        // Validates the response is the access token we expect
+        expect(token).toEqual(ISSUER_TOKEN_RESPONSE);
+      });
     });
-  });
 
-  describe('#token', () => {
-    test('calls the correct underlying library functions and returns an access token', async () => {
-      const proofs = ipd.generateProofs();
-      const token = await ipd.token(ISSUER_CODE_RESPONSE, ISSUER, proofs);
+    describe('#refreshToken', () => {
+      test(`${testPrefix} - calls the correct underlying library functions and returns a refresh token`, async () => {
+        const refreshTokenMockFn = jest.fn().mockReturnValue(ISSUER_REFRESH_TOKEN_RESPONSE);
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            refresh: refreshTokenMockFn,
+          },
+        });
 
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
+        const refreshedToken = await idpartnerClient.refreshToken(ISSUER, ISSUER_TOKEN_RESPONSE.refresh_token);
 
-      // Validates that we call the correct underlying library function to get an access token
-      expect(clientCallbackMockFn.mock.calls.length).toBe(1);
-      expect(clientCallbackMockFn.mock.calls[0]).toEqual([
-        CALLBACK_URI,
-        { response: ISSUER_CODE_RESPONSE },
-        {
-          state: proofs.state,
-          nonce: proofs.nonce,
-          code_verifier: proofs.codeVerifier,
-        },
-        {},
-      ]);
+        // Validates that client is correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
 
-      // Validates the response is the access token we expect
-      expect(token).toEqual(ISSUER_TOKEN_RESPONSE);
+        // Validates that we call the correct underlying library function to get an access token
+        expect(refreshTokenMockFn.mock.calls.length).toBe(1);
+        expect(refreshTokenMockFn.mock.calls[0]).toEqual([ISSUER_TOKEN_RESPONSE.refresh_token, {}]);
+
+        // Validates the response is the access token we expect
+        expect(refreshedToken).toEqual(ISSUER_REFRESH_TOKEN_RESPONSE);
+      });
     });
-  });
 
-  describe('#refreshToken', () => {
-    test('calls the correct underlying library functions and returns an access token', async () => {
-      const token = ISSUER_TOKEN_RESPONSE;
-      const refreshedToken = await ipd.refreshToken(ISSUER, token.refresh_token);
+    describe('#basicUserInfo', () => {
+      test(`${testPrefix} - calls the correct underlying library functions and returns basic user info`, async () => {
+        const basicUserInfoMockFn = jest.fn().mockReturnValue(ISSUER_BASIC_USERINFO_RESPONSE);
+        const { idpartnerClient } = getIdpartnerClient({ clientConfig: idpartnerClientSecretConfig });
 
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
+        const token = { ...ISSUER_TOKEN_RESPONSE, claims: basicUserInfoMockFn };
+        const basicUserInfo = await idpartnerClient.basicUserInfo(ISSUER, token);
 
-      // Validates that we call the correct underlying library function to get an access token
-      expect(clientRefreshTokenMockFn.mock.calls.length).toBe(1);
-      expect(clientRefreshTokenMockFn.mock.calls[0]).toEqual([token.refresh_token, {}]);
+        // Validates that we call the correct underlying library function to get an access token
+        expect(basicUserInfoMockFn.mock.calls.length).toBe(1);
+        expect(basicUserInfoMockFn.mock.calls[0]).toEqual([]);
 
-      // Validates the response is the access token we expect
-      expect(refreshedToken).toEqual(ISSUER_TOKEN_RESPONSE);
+        // Validates the response is the access token we expect
+        expect(basicUserInfo).toEqual(ISSUER_BASIC_USERINFO_RESPONSE);
+      });
     });
-  });
 
-  describe('#basicUserInfo', () => {
-    test('calls the correct underlying library functions and returns basic user info', async () => {
-      const token = ISSUER_TOKEN_RESPONSE;
-      const basicUserInfo = await ipd.basicUserInfo(ISSUER, token);
+    describe('#userInfo', () => {
+      test(`${testPrefix} - calls the correct underlying library functions and returns full user info`, async () => {
+        const fullUserInfoMockFn = jest.fn().mockReturnValue(ISSUER_FULL_USERINFO_RESPONSE);
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            userinfo: fullUserInfoMockFn,
+          },
+        });
 
-      // Validates that we call the correct underlying library function to get an access token
-      expect(clientBasicUserInfoMockFn.mock.calls.length).toBe(1);
-      expect(clientBasicUserInfoMockFn.mock.calls[0]).toEqual([]);
+        const token = ISSUER_TOKEN_RESPONSE;
+        const userinfo = await idpartnerClient.userInfo(ISSUER, token);
 
-      // Validates the response is the access token we expect
-      expect(basicUserInfo).toEqual(ISSUER_BASIC_USERINFO_RESPONSE);
+        // Validates that client is correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
+
+        // Validates that we call the correct underlying library function to get an access token
+        expect(fullUserInfoMockFn.mock.calls.length).toBe(1);
+        expect(fullUserInfoMockFn.mock.calls[0]).toEqual([token, {}]);
+
+        // Validates the response is the access token we expect
+        expect(userinfo).toEqual(ISSUER_FULL_USERINFO_RESPONSE);
+      });
     });
-  });
 
-  describe('#userInfo', () => {
-    test('calls the correct underlying library functions and returns full user info', async () => {
-      const token = ISSUER_TOKEN_RESPONSE;
-      const userinfo = await ipd.userInfo(ISSUER, token);
+    describe('#paymentProcessing', () => {
+      test(`${testPrefix} - raises error if payment processing is disabled in the OP`, async () => {
+        const { idpartnerClient } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            issuer: {
+              authorization_endpoint: ISSUER_AUTH_ENDPOINT,
+              payment_processing_endponit: undefined,
+            },
+          },
+        });
 
-      // Validates that client is correctly initialized
-      assertIssuerDiscoveryAndClientInitialization();
+        expect(idpartnerClient.paymentProcessing(ISSUER, ISSUER_TOKEN_RESPONSE, { body: JSON.stringify({ amount: 100 }) })).rejects.toThrow();
+      });
 
-      // Validates that we call the correct underlying library function to get an access token
-      expect(clientFullUserInfoMockFn.mock.calls.length).toBe(1);
-      expect(clientFullUserInfoMockFn.mock.calls[0]).toEqual([token, {}]);
+      test(`${testPrefix} - raises error if payment processing fails at the OP`, async () => {
+        const requestResourceMockFn = jest.fn().mockReturnValue({ statusCode: 400, body: JSON.stringify({ error: 'failed' }) });
 
-      // Validates the response is the access token we expect
-      expect(userinfo).toEqual(ISSUER_FULL_USERINFO_RESPONSE);
+        const { idpartnerClient } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            issuer: {
+              authorization_endpoint: ISSUER_AUTH_ENDPOINT,
+              payment_processing_endpoint: ISSUER_PAYMENT_PROCESSING_ENDPOINT,
+            },
+            requestResource: requestResourceMockFn,
+          },
+        });
+
+        expect(idpartnerClient.paymentProcessing(ISSUER, ISSUER_TOKEN_RESPONSE, { body: JSON.stringify({ amount: 100 }) })).rejects.toThrow();
+      });
+
+      test(`${testPrefix} - calls the correct underlying library functions and returns payment processing data`, async () => {
+        const requestResourceMockFn = jest.fn().mockReturnValue({ statusCode: 200, body: JSON.stringify(ISSUER_PAYMENT_PROCESSING_RESPONSE) });
+        const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
+          clientConfig: idpartnerClientSecretConfig,
+          customUnderlyingClientBehavior: {
+            issuer: {
+              authorization_endpoint: ISSUER_AUTH_ENDPOINT,
+              payment_processing_endpoint: ISSUER_PAYMENT_PROCESSING_ENDPOINT,
+            },
+            requestResource: requestResourceMockFn,
+          },
+        });
+
+        const requestBody = JSON.stringify({ amount: 100 });
+        const paymentResponse = await idpartnerClient.paymentProcessing(ISSUER, ISSUER_TOKEN_RESPONSE, { body: requestBody });
+
+        // Validates that client is correctly initialized
+        assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
+
+        // Validates that we call the correct underlying library function to perform payment processing
+        expect(requestResourceMockFn.mock.calls.length).toBe(1);
+        expect(requestResourceMockFn.mock.calls[0]).toEqual([
+          ISSUER_PAYMENT_PROCESSING_ENDPOINT,
+          ISSUER_TOKEN_RESPONSE,
+          {
+            body: requestBody,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ]);
+
+        // Validates the response is the mocked payment processing response
+        expect(paymentResponse).toEqual(ISSUER_PAYMENT_PROCESSING_RESPONSE);
+      });
     });
-  });
+  }
 });
