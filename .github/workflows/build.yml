@@ -23,7 +23,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 18.14.2
-        cache: yarn
     - name: Install
       run: yarn install
     - name: Run lint
