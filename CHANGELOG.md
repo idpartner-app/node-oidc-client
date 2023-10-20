@@ -1,3 +1,6 @@
+3.1.2
+- Bump up internal libraries
+
 3.1.1
 - Use @idpartner/jose-wrapper lib instead of node-jose
 
