@@ -1,3 +1,6 @@
+3.1.3
+- Bump up jose-wrapper library
+
 3.1.2
 - Bump up internal libraries
 
