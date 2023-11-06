@@ -70,9 +70,10 @@ router.get('/auth', (req, res, next) => {
   // Specify prompt=consent and scope=offline_access to get a refresh token that can be used to fetch full user info later on.
   const prompt = 'consent';
   const scope = ['openid', 'email', 'profile', 'offline_access'];
+  const extraAuthorizationParams = { propmpt };
   req.session.idp_proofs = idPartner.generateProofs()
   req.session.issuer = req.query.iss;
-  const authorizationUrl = await idPartner.getAuthorizationUrl(req.query, req.session.idp_proofs, scope, prompt);
+  const authorizationUrl = await idPartner.getAuthorizationUrl(req.query, req.session.idp_proofs, scope, extraAuthorizationParams);
   res.redirect(authorizationUrl);
 });
 
