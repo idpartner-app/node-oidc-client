@@ -52,7 +52,9 @@ Creates an authorization url with a signed JWT (using the private key in the JKW
 | `query` | `string` | **Required**. The query parameters that started the authorization flow after the end user clicks the IDPartner Button
 | `proofs` | `string` | **Required**. Use helper method `generateProofs` to generate a `state`, `nonce` and `codeVerifier` used for security & validations purposes
 | `scope` | `array` | **Required**. Specify the user attributes your require for your application [IDPartner supports the standard OIDC scopes](https://openid.net/specs/openid-connect-basic-1_0.html#Scopes). For example - `["openid", "email", "address", "offline_access"]`
-| `prompt` | `string` | **Optional**. Specify it as `consent` if you need a refresh token returned by the OP
+| `extraAuthorizationParams` | `object` | **Optional**. Send extra authorization params that should be sent to the OP.
+| `extraAuthorizationParams.prompt` | `string` | **Optional**. Set it to `consent` if you need a refresh token returned by the OP
+| `extraAuthorizationParams.claims` | `obje ct` | **Optional**. Set it to ask for specific claims. Use it as a way to augment/limit the claims returned by scope param. More info in https://openid.net/specs/openid-connect-core-1_0.html#ClaimsParameter.
 
 <br>
 
