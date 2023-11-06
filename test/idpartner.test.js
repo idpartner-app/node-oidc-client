@@ -235,7 +235,7 @@ describe('idpartner', function () {
         assertUnderlyingClientInitialization({ clientConfig, underlyingClientMock });
 
         // Validates that request object and PAR is made
-        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig, underlyingClientMock, proofs, prompt});
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig, underlyingClientMock, proofs, prompt });
 
         // Validates the response is the url we expect
         const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
