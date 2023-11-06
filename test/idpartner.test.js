@@ -133,7 +133,7 @@ describe('idpartner', function () {
     expect(underlyingClientMock.mock.calls[0]).toEqual([expectedUnderlyingClientInitializationParams, clientConfig.jwks]);
   };
 
-  const assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest = ({ clientConfig, underlyingClientMock, proofs, consent, claims }) => {
+  const assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest = ({ clientConfig, underlyingClientMock, proofs, prompt, claims }) => {
     const { requestObject: requestObjectMock, pushedAuthorizationRequest: pushedAuthorizationRequestMock } = underlyingClientMock.mock.results[0].value;
 
     const expectedRequestParams = {
@@ -143,7 +143,7 @@ describe('idpartner', function () {
       state: proofs.state,
       nonce: proofs.nonce,
       scope: 'openid',
-      prompt: consent,
+      prompt,
       response_mode: 'jwt',
       response_type: 'code',
       client_id: clientConfig.client_id,
@@ -225,22 +225,24 @@ describe('idpartner', function () {
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
           },
         });
-        const consent = 'prompt';
+        const prompt = 'consent';
         const proofs = idpartnerClient.generateProofs();
-        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent);
+        const query = { iss: ISSUER, visitor_id: VISITOR_ID };
+        const extraAuthorizationParams = { prompt };
+        const url = await idpartnerClient.getAuthorizationUrl(query, proofs, ['openid'], extraAuthorizationParams);
 
         // Validates that the underlying client was correctly initialized
         assertUnderlyingClientInitialization({ clientConfig, underlyingClientMock });
 
         // Validates that request object and PAR is made
-        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig, underlyingClientMock, proofs, consent });
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig, underlyingClientMock, proofs, prompt});
 
         // Validates the response is the url we expect
         const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
         expect(url).toBe(`${ISSUER_AUTH_ENDPOINT}?${queryParams.toString()}`);
       });
 
-      test(`${testPrefix} - returns a valid url if consent is not specified`, async () => {
+      test(`${testPrefix} - returns a valid url if prompt is not specified`, async () => {
         const { idpartnerClient, underlyingClientMock } = getIdpartnerClient({
           clientConfig: idpartnerClientSecretConfig,
           customUnderlyingClientBehavior: {
@@ -249,13 +251,14 @@ describe('idpartner', function () {
           },
         });
         const proofs = idpartnerClient.generateProofs();
-        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid']);
+        const query = { iss: ISSUER, visitor_id: VISITOR_ID };
+        const url = await idpartnerClient.getAuthorizationUrl(query, proofs, ['openid']);
 
         // Validates that the underlying client was correctly initialized
         assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
 
         // Validates that request object and PAR is made
-        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, consent: undefined });
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, prompt: undefined });
 
         // Validates the response is the url we expect
         const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
@@ -270,15 +273,17 @@ describe('idpartner', function () {
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
           },
         });
-        const consent = 'prompt';
+        const prompt = 'consent';
         const proofs = idpartnerClient.generateProofs();
-        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, CLAIMS);
+        const query = { iss: ISSUER, visitor_id: VISITOR_ID };
+        const extraAuthorizationParams = { prompt, claims: CLAIMS };
+        const url = await idpartnerClient.getAuthorizationUrl(query, proofs, ['openid'], extraAuthorizationParams);
 
         // Validates that the underlying client was correctly initialized
         assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
 
         // Validates that request object and PAR is made
-        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, consent, claims: CLAIMS });
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, prompt, claims: CLAIMS });
 
         // Validates the response is the url we expect
         const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
@@ -293,16 +298,18 @@ describe('idpartner', function () {
             pushedAuthorizationRequest: jest.fn().mockReturnValue(ISSUER_PAR_RESPONSE),
           },
         });
-        const consent = 'prompt';
+        const prompt = 'consent';
         const claims = undefined;
         const proofs = idpartnerClient.generateProofs();
-        const url = await idpartnerClient.getAuthorizationUrl({ iss: ISSUER, visitor_id: VISITOR_ID }, proofs, ['openid'], consent, claims);
+        const query = { iss: ISSUER, visitor_id: VISITOR_ID };
+        const extraAuthorizationParams = { prompt, claims };
+        const url = await idpartnerClient.getAuthorizationUrl(query, proofs, ['openid'], extraAuthorizationParams);
 
         // Validates that the underlying client was correctly initialized
         assertUnderlyingClientInitialization({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock });
 
         // Validates that request object and PAR is made
-        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, consent, claims });
+        assertUnderlyingClientRequestObjectCreationAndPushedAuthRequest({ clientConfig: idpartnerClientSecretConfig, underlyingClientMock, proofs, prompt, claims });
 
         // Validates the response is the url we expect
         const queryParams = new URLSearchParams({ request_uri: ISSUER_PAR_RESPONSE.request_uri });
@@ -311,9 +318,11 @@ describe('idpartner', function () {
 
       test(`${testPrefix} - returns the converted claims into scopes when claims parameter is used`, async () => {
         const { idpartnerClient } = getIdpartnerClient({ clientConfig: idpartnerClientSecretConfig });
-        const consent = 'prompt';
+        const prompt = 'consent';
         const proofs = idpartnerClient.generateProofs();
-        const url = await idpartnerClient.getAuthorizationUrl({ visitor_id: VISITOR_ID }, proofs, ['openid'], consent, CLAIMS);
+        const query = { visitor_id: VISITOR_ID };
+        const extraAuthorizationParams = { prompt, claims: CLAIMS };
+        const url = await idpartnerClient.getAuthorizationUrl(query, proofs, ['openid'], extraAuthorizationParams);
 
         // Validates the response is the url we expect
         expect(url).toBe(
