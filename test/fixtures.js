@@ -53,7 +53,7 @@ const ISSUER_TOKEN_RESPONSE = {
 };
 
 const ISSUER_PAYMENT_PROCESSING_RESPONSE = {
-  transaction_id: uuidv4(),
+  verification_id: uuidv4(),
   account_statement_descriptor: uuidv4(),
   amount: 100,
   currency: 'USD',

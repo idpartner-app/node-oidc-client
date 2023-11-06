@@ -1,3 +1,6 @@
+4.0.0
+- Add support for sending extra authorization params to the OP
+
 3.1.3
 - Bump up jose-wrapper library
 
