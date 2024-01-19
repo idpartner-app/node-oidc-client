@@ -1,3 +1,6 @@
+5.0.0
+- Make account selector URL fully customizable
+
 4.0.0
 - Add support for sending extra authorization params to the OP
 
