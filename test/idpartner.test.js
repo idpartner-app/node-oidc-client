@@ -16,7 +16,7 @@ const {
 
 jest.mock('openid-client');
 
-const ACCOUNT_SELECTOR = 'https://account-selector.com';
+const ACCOUNT_SELECTOR = 'https://account-selector.com/auth/select-accounts';
 const CLIENT_ID = 'mXzJ0TJEbWQb2A8s1z6gq';
 const CLIENT_SECRET = uuidv4();
 const CALLBACK_URI = 'http://myapplication.com';
@@ -326,7 +326,7 @@ describe('idpartner', function () {
 
         // Validates the response is the url we expect
         expect(url).toBe(
-          `${idpartnerClientSecretConfig.account_selector_service_url}/auth/select-accounts?client_id=${idpartnerClientSecretConfig.client_id}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`,
+          `${idpartnerClientSecretConfig.account_selector_service_url}?client_id=${idpartnerClientSecretConfig.client_id}&visitor_id=${VISITOR_ID}&scope=openid&claims=payment_details email`,
         );
       });
     });
