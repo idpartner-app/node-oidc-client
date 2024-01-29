@@ -1,3 +1,6 @@
+5.0.1
+- Add adobe flow parameters to allow account selection after hitting the IDPartner's OIDC
+
 5.0.0
 - Make account selector URL fully customizable
 
